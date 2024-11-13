@@ -3,150 +3,467 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generate Content using Cohere AI</title>
+    <title>Advanced Content Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #6C63FF;
+            --secondary: #4CAF50;
+            --dark: #2C3E50;
+            --light: #ECF0F1;
+            --accent: #FF6B6B;
+            --gradient: linear-gradient(135deg, var(--primary), #8B7FFF);
+            --error: #ff4757;
+            --success: #2ed573;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #f4f4f4;
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            color: var(--light);
+            min-height: 100vh;
         }
+
         .container {
-            max-width: 600px;
+            max-width: 800px;
             margin: 0 auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            transition: transform 0.3s ease;
         }
+
+        
+
         h1 {
             text-align: center;
+            color: var(--light);
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            position: relative;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
-        input[type="text"] {
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: var(--gradient);
+            border-radius: 2px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--light);
+            font-weight: 500;
+        }
+
+        input[type="text"], textarea {
             width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 15px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--light);
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
+        select {
+            width: 100%;
+            padding: 15px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--light);
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23ECF0F1%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px top 50%;
+            background-size: 12px auto;
+            padding-right: 40px;
+        }
+
+        select option {
+            background:#1a1a1a ;
+            color: var(--light);
+            padding: 15px;
+        }
+
+        input[type="text"]:focus, select:focus, textarea:focus {
+            outline: none;
+            background:#2d2d2d;
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+
+        .character-count {
+            text-align: right;
+            font-size: 0.9em;
+            color: var(--light);
+            margin-top: 5px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
         .button-container {
             display: flex;
-            justify-content: space-between; /* Aligns button and loader */
-            align-items: center; /* Centers items vertically */
+            justify-content: center; /* Center the buttons */
+            align-items: center;
+            margin-top: 20px;
+            gap: 15px;
         }
+        
+        
+
         button {
-            flex: 1; /* Takes full width of the flex container */
-            padding: 10px;
-            background-color: #007BFF;
+            flex: 1;
+            padding: 15px 30px;
+            background: var(--gradient);
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 12px;
             cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
         }
+
+        button.secondary {
+            background: linear-gradient(135deg, var(--secondary), #45a049);
+        }
+
         button:hover {
-            background-color: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 99, 255, 0.4);
         }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .output-container {
+            
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .output-container:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
         #output {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            min-height: 100px;
+            white-space: pre-wrap;
+            line-height: 1.6;
         }
-        /* Loader styles */
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .output-controls {
+            display: flex;
+            margin:2px;
+            gap: 9px;
+        }
+
+        .control-btn {
+            margin-right:5px;
+            padding: 8px 35px 8px 20px;
+            items:center;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 6px;
+            color: var(--light);
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .control-btn:active {
+            transform: translateY(0);
+        }
+
         .loader {
-            display: none; /* Initially hidden */
-            border: 4px solid rgba(255, 255, 255, 0.5);
-            border-top: 4px solid #007BFF;
+            display: none;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid var(--primary);
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             animation: spin 1s linear infinite;
-            margin-left: 10px; /* Space between button and loader */
+            margin-left: 15px;
         }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            background: var(--success);
+            color: white;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: var(--error);
+        }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+
+            button {
+                padding: 12px 24px;
+            }
+        }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h1>Advanced Content Generator</h1>
 
-<div class="container">
-    <h1>Content Generator</h1>
-    <p>Enter a title below, and generate content:</p>
+        <div class="input-group">
+            <label for="titleInput">Title or Topic</label>
+            <input type="text" id="titleInput" placeholder="Enter your topic or title" oninput="updateCharCount(this, 'titleCount')" />
+            <div class="character-count" id="titleCount">0/100</div>
+        </div>
 
-    <input type="text" id="titleInput" placeholder="Enter a title here" />
+        <div class="options-grid">
+            <div class="input-group">
+                <label for="contentType">Content Type</label>
+                <select id="contentType">
+                    <option value="article">Article</option>
+                    <option value="blog">Blog Post</option>
+                    <option value="social">Social Media Post</option>
+                    <option value="email">Email</option>
+                    <option value="creative">Creative Writing</option>
+                </select>
+            </div>
 
-    <div class="button-container">
-        <button id="generateButton" onclick="generateContent()">
-            Generate Content
-        </button>
-        <div class="loader" id="loader"></div> <!-- Loader element -->
+            <div class="input-group">
+                <label for="tone">Tone</label>
+                <select id="tone">
+                    <option value="professional">Professional</option>
+                    <option value="casual">Casual</option>
+                    <option value="friendly">Friendly</option>
+                    <option value="formal">Formal</option>
+                    <option value="humorous">Humorous</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label for="additionalContext">Additional Context (Optional)</label>
+            <textarea id="additionalContext" rows="3" placeholder="Add any specific requirements or context" oninput="updateCharCount(this, 'contextCount')"></textarea>
+            <div class="character-count" id="contextCount">0/200</div>
+        </div>
+
+        <div class="button-container">
+            <button id="generateButton" onclick="generateContent()">Generate Content</button>
+            <button class="secondary" onclick="clearAll()">Clear All</button>
+            <div class="loader" id="loader"></div>
+        </div>
+
+        <div class="output-container">
+            <div class="output-header">
+                <h3>Generated Content</h3>
+                <div class="output-controls">
+                    <button class="control-btn" onclick="copyToClipboard()">Copy</button>
+                    <button class="control-btn" onclick="downloadContent()">Download</button>
+                </div>
+            </div>
+            <div id="output">Your generated content will appear here...</div>
+        </div>
     </div>
 
-    <div id="output">
-        Generated content will appear here...
-    </div>
-</div>
+    <div class="notification" id="notification">Content copied to clipboard!</div>
 
-<script>
-    async function generateContent() {
-        const title = document.getElementById('titleInput').value;
-        const output = document.getElementById('output');
-        const loader = document.getElementById('loader');
-        const generateButton = document.getElementById('generateButton');
-
-        if (!title) {
-            output.innerHTML = 'Please enter a title!';
-            return;
+    <script>
+        function updateCharCount(input, counterId) {
+            const maxLength = counterId === 'titleCount' ? 100 : 200;
+            const count = input.value.length;
+            document.getElementById(counterId).textContent = `${count}/${maxLength}`;
         }
 
-        const apiKey = 'Wm7ktWrM166lZAw2y9IYp2L72wFShWJM7IgGm6jy'; // Your Cohere API key
-        const apiUrl = 'https://api.cohere.ai/v1/generate'; // Cohere's text generation API
-
-        // Show the loader and disable the button
-        loader.style.display = 'inline-block';
-        generateButton.disabled = true;
-
-        try {
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${apiKey}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    model: 'command-xlarge-nightly', // Use a suitable model
-                    prompt: title, // Your title will be used as the prompt
-                    max_tokens: 500, // Allow for reasonable content generation
-                    temperature: 0.7 // Adjust for creativity
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-
-            // Display the generated content in the output div
-            if (data.generations && data.generations.length > 0) {
-                output.innerHTML = `<h2>${title}</h2><p>${data.generations[0].text.trim()}</p>`;
-            } else {
-                output.innerHTML = 'No content generated. Try again.';
-            }
-        } catch (error) {
-            output.innerHTML = `Error generating content. Please try again later. <br>Error: ${error.message}`;
-            console.error('Error:', error);
-        } finally {
-            // Hide the loader and enable the button after the operation
-            loader.style.display = 'none';
-            generateButton.disabled = false;
+        function showNotification(message, isError = false) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${isError ? 'error' : ''}`;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
         }
-    }
-</script>
 
+        function clearAll() {
+            document.getElementById('titleInput').value = '';
+            document.getElementById('additionalContext').value = '';
+            document.getElementById('output').innerHTML = 'Your generated content will appear here...';
+            document.getElementById('titleCount').textContent = '0/100';
+            document.getElementById('contextCount').textContent = '0/00';
+        }
+
+        async function copyToClipboard() {
+            const output = document.getElementById('output').innerText;
+            try {
+                await navigator.clipboard.writeText(output);
+                showNotification('Content copied to clipboard!');
+            } catch (err) {
+                showNotification('Failed to copy content!', true);
+            }
+        }
+
+        function downloadContent() {
+            const content = document.getElementById('output').innerText;
+            const title = document.getElementById('titleInput').value || 'generated-content';
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${title.toLowerCase().replace(/\s+/g, '-')}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+
+        async function generateContent() {
+            const title = document.getElementById('titleInput').value;
+            const contentType = document.getElementById('contentType').value;
+            const tone = document.getElementById('tone').value;
+            const context = document.getElementById('additionalContext').value;
+            const output = document.getElementById('output');
+            const loader = document.getElementById('loader');
+            const generateButton = document.getElementById('generateButton');
+
+            if (!title) {
+                showNotification('Please enter a title!', true);
+                return;
+            }
+
+            const prompt = `Generate a ${tone} ${contentType} about "${title}". ${context ? `Additional context: ${context}` : ''}`;
+
+            loader.style.display = 'inline-block';
+            generateButton.disabled = true;
+
+            try {
+                const response = await fetch('https://api.cohere.ai/v1/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer Wm7ktWrM166lZAw2y9IYp2L72wFShWJM7IgGm6jy`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: 'command-xlarge-nightly',
+                        prompt: prompt,
+                        max_tokens: 800,
+                        temperature: 0.7,
+                        k: 0,
+                        stop_sequences: [],
+                        return_likelihoods: 'NONE'
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.generations && data.generations.length > 0) {
+                    const generatedText = data.generations[0].text.trim();
+                    output.innerHTML = `<h2>${title}</h2>
+                        <p><strong>Type:</strong> ${contentType} | <strong>Tone:</strong> ${tone}</p>
+                        <div style="margin-top: 15px">${generatedText.replace(/\n/g, '<br>')}</div>`;
+                } else {
+                    output.innerHTML = 'No content generated. Please try again.';
+                }
+            } catch (error) {
+                showNotification('Error generating content. Please try again.', true);
+                console.error('Error:', error);
+            } finally {
+                loader.style.display = 'none';
+                generateButton.disabled = false;
+            }
+        }
+    </script>
 </body>
 </html>
