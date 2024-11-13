@@ -3,141 +3,523 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Market Research Assistant</title>
+    <title>Market Research Assistant Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary: #6C63FF;
+            --secondary: #4CAF50;
+            --dark: #2C3E50;
+            --light: #ECF0F1;
+            --accent: #FF6B6B;
+            --gradient: linear-gradient(135deg, var(--primary), #8B7FFF);
+            --error: #ff4757;
+            --success: #2ed573;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        body, html {
-            height: 100%;
-            font-family: Arial, sans-serif;
-            background-color: #e9ecef;
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            color: var(--light);
+            min-height: 100vh;
         }
+
         .container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            transition: transform 0.3s ease;
         }
-        .content {
-            max-width: 900px;
-            width: 100%;
-            background-color: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-        }
+
         h1 {
             text-align: center;
-            margin-bottom: 20px;
-            font-size: 2.2rem;
-            color: #343a40;
+            color: var(--light);
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            position: relative;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: var(--gradient);
+            border-radius: 2px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--light);
+            font-weight: 500;
+        }
+
         textarea {
             width: 100%;
-            height: 150px;
             padding: 15px;
-            border: 1px solid #ced4da;
-            border-radius: 5px;
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-            resize: none;
-        }
-        button {
-            padding: 15px 30px;
-            background-color: #007bff;
-            color: white;
+            margin: 8px 0;
             border: none;
-            border-radius: 5px;
-            font-size: 1.2rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--light);
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        textarea:focus {
+            outline: none;
+            background: #2d2d2d;
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .analysis-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
             cursor: pointer;
-            display: block;
-            margin: 0 auto;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
         }
-        button:hover {
-            background-color: #0056b3;
+
+        .analysis-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
         }
-        #output {
+
+        .analysis-card.selected {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .analysis-card i {
+            font-size: 36px;
+            margin-bottom: 15px;
+            color: var(--light);
+        }
+
+        .analysis-card.selected i {
+            color: #fff;
+        }
+
+        .analysis-card h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: var(--light);
+        }
+
+        .analysis-card p {
+            font-size: 14px;
+            opacity: 0.8;
+            color: var(--light);
+        }
+
+        .button-container {
+            display: flex;
+            gap: 15px;
             margin-top: 30px;
-            padding: 25px;
-            background-color: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            min-height: 200px;
-            font-size: 1.1rem;
-            color: #212529;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 99, 255, 0.4);
+        }
+
+        .results-container {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: none;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .results-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .control-btn {
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 6px;
+            color: var(--light);
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .loader {
+            display: none;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            opacity: 0;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .notification.success {
+            background: var(--success);
+        }
+
+        .notification.error {
+            background: var(--error);
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .button-container {
+                flex-direction: column;
+            }
+
+            .results-header {
+                flex-direction: column;
+                gap: 15px;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h1>Market Research Assistant Pro</h1>
 
-<div class="container">
-    <div class="content">
-        <h1>Market Research Assistant</h1>
-        <p>Enter keywords to analyze market trends and identify opportunities.</p>
+        <div class="input-group">
+            <label for="marketInput">Market Description</label>
+            <textarea id="marketInput" placeholder="Describe your market, industry, or specific areas you'd like to analyze..."></textarea>
+        </div>
 
-        <textarea id="keywordInput" placeholder="Enter keywords related to your market..."></textarea>
-        
-        <button id="analyzeButton" onclick="analyzeMarket()">
-            Analyze Market
-        </button>
+        <label>Analysis Type</label>
+        <div class="analysis-grid">
+            <div class="analysis-card" data-type="trends">
+                <i class="fas fa-chart-line"></i>
+                <h3>Market Trends</h3>
+                <p>Analyze current and emerging trends in your market</p>
+            </div>
+            <div class="analysis-card" data-type="competition">
+                <i class="fas fa-users"></i>
+                <h3>Competitive Analysis</h3>
+                <p>Evaluate competitors and market positioning</p>
+            </div>
+            <div class="analysis-card" data-type="opportunities">
+                <i class="fas fa-lightbulb"></i>
+                <h3>Growth Opportunities</h3>
+                <p>Identify potential market gaps and opportunities</p>
+            </div>
+            <div class="analysis-card" data-type="swot">
+                <i class="fas fa-chess"></i>
+                <h3>SWOT Analysis</h3>
+                <p>Analyze strengths, weaknesses, opportunities, and threats</p>
+            </div>
+        </div>
 
-        <div id="output">
-            Market insights will appear here...
+        <div class="button-container">
+            <button class="btn-primary" id="analyzeButton">
+                <i class="fas fa-search"></i>
+                Analyze Market
+            </button>
+            <button class="btn-secondary" id="clearButton">
+                <i class="fas fa-undo"></i>
+                Clear All
+            </button>
+        </div>
+
+        <div class="loader" id="mainLoader"></div>
+
+        <div class="results-container" id="resultsContainer">
+            <div class="results-header">
+                <h2>Analysis Results</h2>
+                <div class="results-controls">
+                    <button class="control-btn" id="copyButton">
+                        <i class="fas fa-copy"></i>
+                        Copy
+                    </button>
+                    <button class="control-btn" id="downloadButton">
+                        <i class="fas fa-download"></i>
+                        Download
+                    </button>
+                </div>
+            </div>
+            <div id="output"></div>
         </div>
     </div>
-</div>
 
-<script>
-    async function analyzeMarket() {
-        const keywords = document.getElementById('keywordInput').value;
-        const output = document.getElementById('output');
+    <div class="notification" id="notification"></div>
 
-        if (!keywords) {
-            output.innerHTML = 'Please enter some keywords for analysis!';
-            return;
-        }
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let selectedAnalysisType = null;
+            const apiKey = 'Wm7ktWrM166lZAw2y9IYp2L72wFShWJM7IgGm6jy'; // Replace with your actual API key
+            const apiUrl = 'https://api.cohere.ai/v1/generate';
 
-        const apiKey = 'Wm7ktWrM166lZAw2y9IYp2L72wFShWJM7IgGm6jy'; // Your AI API key
-        const apiUrl = 'https://api.cohere.ai/v1/generate'; // Your AI API endpoint
+            // DOM Elements
+            const analysisCards = document.querySelectorAll('.analysis-card');
+            const marketInput = document.getElementById('marketInput');
+            const analyzeButton = document.getElementById('analyzeButton');
+            const clearButton = document.getElementById('clearButton');
+            const copyButton = document.getElementById('copyButton');
+            const downloadButton = document.getElementById('downloadButton');
+            const resultsContainer = document.getElementById('resultsContainer');
+            const output = document.getElementById('output');
+            const loader = document.getElementById('mainLoader');
+            const notification = document.getElementById('notification');
 
-        try {
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${apiKey}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    model: 'command-xlarge-nightly', // Use a suitable model
-                    prompt: `Analyze the market trends and opportunities based on the following keywords: "${keywords}". Provide insightful analysis.`,
-                    max_tokens: 900, // Adjust as needed
-                    temperature: 0.7 // Adjust for creativity
-                })
+            // Event Listeners for Analysis Cards
+            analysisCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    analysisCards.forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                    selectedAnalysisType = card.dataset.type;
+                });
             });
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`HTTP error! Status: ${response.status} - ${errorText}`);
+            // Event Listener for Analyze Button
+            analyzeButton.addEventListener('click', analyzeMarket);
+
+            // Event Listener for Clear Button
+            clearButton.addEventListener('click', clearAll);
+
+            // Event Listener for Copy Button
+            copyButton.addEventListener('click', copyToClipboard);
+
+            // Event Listener for Download Button
+            downloadButton.addEventListener('click', downloadContent);
+
+            // Function to Show Notifications
+            function showNotification(message, type = 'success') {
+                notification.textContent = message;
+                notification.className = `notification ${type} show`;
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
             }
 
-            const data = await response.json();
-
-            // Display the generated insights in the output div
-            if (data.generations && data.generations.length > 0) {
-                const insights = data.generations[0].text.trim();
-                output.innerHTML = `<h2>Market Insights for "${keywords}"</h2><p>${insights}</p>`;
-            } else {
-                output.innerHTML = 'No insights generated. Try again.';
+            // Function to Clear All Inputs and Selections
+            function clearAll() {
+                marketInput.value = '';
+                analysisCards.forEach(card => card.classList.remove('selected'));
+                selectedAnalysisType = null;
+                resultsContainer.style.display = 'none';
+                output.innerHTML = '';
+                showNotification('Cleared input and selections.', 'success');
             }
-        } catch (error) {
-            console.error('Fetch error:', error);
-            output.innerHTML = `Error generating insights. Please try again later.<br>Error: ${error.message}`;
-        }
-    }
-</script>
 
+            // Function to Copy Results to Clipboard
+            async function copyToClipboard() {
+                try {
+                    await navigator.clipboard.writeText(output.innerText);
+                    showNotification('Content copied to clipboard!', 'success');
+                } catch (err) {
+                    showNotification('Failed to copy content!', 'error');
+                }
+            }
+
+            // Function to Download Results as a Text File
+            function downloadContent() {
+                const content = output.innerText;
+                if (!content) {
+                    showNotification('No content to download!', 'error');
+                    return;
+                }
+                const blob = new Blob([content], { type: 'text/plain' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'market-analysis.txt';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                showNotification('Analysis downloaded successfully!', 'success');
+            }
+
+            // Function to Analyze Market Description
+            async function analyzeMarket() {
+                const marketDescription = marketInput.value.trim();
+                
+                if (!marketDescription) {
+                    showNotification('Please enter a market description!', 'error');
+                    return;
+                }
+
+                if (!selectedAnalysisType) {
+                    showNotification('Please select an analysis type!', 'error');
+                    return;
+                }
+
+                loader.style.display = 'block';
+                analyzeButton.disabled = true;
+                resultsContainer.style.display = 'none';
+                output.innerHTML = '';
+
+                let promptPrefix = '';
+                switch(selectedAnalysisType) {
+                    case 'trends':
+                        promptPrefix = 'Provide a detailed analysis of current and emerging market trends for:';
+                        break;
+                    case 'competition':
+                        promptPrefix = 'Conduct a comprehensive competitive analysis for the market involving:';
+                        break;
+                    case 'opportunities':
+                        promptPrefix = 'Identify and analyze key growth opportunities and potential market gaps for:';
+                        break;
+                    case 'swot':
+                        promptPrefix = 'Perform a detailed SWOT analysis for the market related to:';
+                        break;
+                    default:
+                        promptPrefix = 'Analyze the following market:';
+                }
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${apiKey}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            model: 'command-xlarge-nightly',
+                            prompt: `${promptPrefix} "${marketDescription}". Provide detailed, actionable insights with specific recommendations.`,
+                            max_tokens: 1000,
+                            temperature: 0.7
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(`HTTP error! Status: ${response.status} - ${errorText}`);
+                    }
+
+                    const data = await response.json();
+
+                    // Display the generated insights in the output div
+                    if (data.generations && data.generations.length > 0) {
+                        const insights = data.generations[0].text.trim();
+                        output.innerHTML = `<h3>Market Insights for "${marketDescription}"</h3><p>${insights.replace(/\n/g, '<br>')}</p>`;
+                        resultsContainer.style.display = 'block';
+                        showNotification('Analysis complete.', 'success');
+                    } else {
+                        output.innerHTML = 'No insights generated. Try again.';
+                        resultsContainer.style.display = 'block';
+                        showNotification('No insights generated. Try again.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Fetch error:', error);
+                    output.innerHTML = `Error generating insights. Please try again later.<br>Error: ${error.message}`;
+                    resultsContainer.style.display = 'block';
+                    showNotification('Error generating insights. Please try again later.', 'error');
+                } finally {
+                    loader.style.display = 'none';
+                    analyzeButton.disabled = false;
+                }
+            }
+        });
+    </script>
 </body>
 </html>
