@@ -3,151 +3,374 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generate Blog Titles using Cohere AI</title>
+    <title>AI Blog Title Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #6C63FF;
+            --secondary: #4CAF50;
+            --dark: #2C3E50;
+            --light: #ECF0F1;
+            --accent: #FF6B6B;
+            --gradient: linear-gradient(135deg, var(--primary), #8B7FFF);
+            --error: #ff4757;
+            --success: #2ed573;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #f4f4f4;
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            color: var(--light);
+            min-height: 100vh;
         }
+
         .container {
-            max-width: 600px;
+            max-width: 800px;
             margin: 0 auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            transition: transform 0.3s ease;
         }
+
         h1 {
             text-align: center;
+            color: var(--light);
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            position: relative;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
-        input[type="text"] {
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: var(--gradient);
+            border-radius: 2px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--light);
+            font-weight: 500;
+        }
+
+        input[type="text"], select {
             width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 15px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--light);
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23ECF0F1%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px top 50%;
+            background-size: 12px auto;
+            padding-right: 40px;
+        }
+
+        select option {
+            background: #1a1a1a;
+            color: var(--light);
+            padding: 15px;
+        }
+
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            background: #2d2d2d;
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
         .button-container {
             display: flex;
-            justify-content: space-between; /* Aligns button and loader */
-            align-items: center; /* Centers items vertically */
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
         }
+
         button {
-            flex: 1; /* Takes full width of the flex container */
-            padding: 10px;
-            background-color: #007BFF;
+            padding: 15px 30px;
+            background: var(--gradient);
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 12px;
             cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
         }
+
         button:hover {
-            background-color: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 99, 255, 0.4);
         }
-        #output {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            min-height: 100px;
+
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
         }
-        /* Loader styles */
+
         .loader {
-            display: none; /* Initially hidden */
-            border: 4px solid rgba(255, 255, 255, 0.5);
-            border-top: 4px solid #007BFF;
+            display: none;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid var(--primary);
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             animation: spin 1s linear infinite;
-            margin-left: 10px; /* Space between button and loader */
+            margin-left: 15px;
         }
+
+        .titles-container {
+            margin-top: 30px;
+            display: grid;
+            gap: 15px;
+        }
+
+        .title-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .title-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(5px);
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: 1px solid var(--primary);
+            padding: 8px 15px;
+            border-radius: 6px;
+            color: var(--primary);
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            background: var(--success);
+            color: white;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: var(--error);
+        }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            button {
+                padding: 12px 24px;
+            }
+        }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h1>AI Blog Title Generator</h1>
 
-<div class="container">
-    <h1>Blog Title Generator</h1>
-    <p>Enter a topic below, and generate blog titles:</p>
+        <div class="input-group">
+            <label for="titleInput">Topic or Keywords</label>
+            <input type="text" id="titleInput" placeholder="Enter your topic (e.g., 'digital marketing', 'healthy cooking')" />
+        </div>
 
-    <input type="text" id="titleInput" placeholder="Enter a topic here" />
+        <div class="options-grid">
+            <div class="input-group">
+                <label for="styleSelect">Writing Style</label>
+                <select id="styleSelect">
+                    <option value="professional">Professional</option>
+                    <option value="casual">Casual</option>
+                    <option value="creative">Creative</option>
+                    <option value="listicle">Listicle</option>
+                    <option value="howto">How-To Guide</option>
+                </select>
+            </div>
 
-    <div class="button-container">
-        <button id="generateButton" onclick="generateTitles()">
-            Generate Titles
-        </button>
-        <div class="loader" id="loader"></div> <!-- Loader element -->
+            <div class="input-group">
+                <label for="countSelect">Number of Titles</label>
+                <select id="countSelect">
+                    <option value="5">5 titles</option>
+                    <option value="10" selected>10 titles</option>
+                    <option value="15">15 titles</option>
+                    <option value="20">20 titles</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="button-container">
+            <button id="generateButton" onclick="generateTitles()">Generate Titles</button>
+            <div class="loader" id="loader"></div>
+        </div>
+
+        <div id="titles-output" class="titles-container"></div>
     </div>
 
-    <div id="output">
-        Generated titles will appear here...
-    </div>
-</div>
+    <div class="notification" id="notification"></div>
 
-<script>
-    async function generateTitles() {
-        const topic = document.getElementById('titleInput').value;
-        const output = document.getElementById('output');
-        const loader = document.getElementById('loader');
-        const generateButton = document.getElementById('generateButton');
+    <script>
+        async function generateTitles() {
+            const topic = document.getElementById('titleInput').value;
+            const style = document.getElementById('styleSelect').value;
+            const count = document.getElementById('countSelect').value;
+            const output = document.getElementById('titles-output');
+            const loader = document.getElementById('loader');
+            const generateButton = document.getElementById('generateButton');
 
-        if (!topic) {
-            output.innerHTML = 'Please enter a topic!';
-            return;
+            if (!topic) {
+                showNotification('Please enter a topic!', true);
+                return;
+            }
+
+            // Show loading state
+            loader.style.display = 'inline-block';
+            generateButton.disabled = true;
+            output.innerHTML = '';
+
+            const apiKey = 'Wm7ktWrM166lZAw2y9IYp2L72wFShWJM7IgGm6jy';
+            const apiUrl = 'https://api.cohere.ai/v1/generate';
+
+            try {
+                const prompt = `Generate ${count} ${style} blog titles for the topic: "${topic}". Make them engaging and SEO-friendly.`;
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: 'command-xlarge-nightly',
+                        prompt: prompt,
+                        max_tokens: 500,
+                        temperature: 0.7
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.generations && data.generations.length > 0) {
+                    const titles = data.generations[0].text
+                        .trim()
+                        .split('\n')
+                        .filter(title => title.trim());
+
+                    output.innerHTML = titles.map(title => `
+                        <div class="title-card">
+                            <span>${title.trim()}</span>
+                            <button onclick="copyToClipboard('${title.trim()}')" class="copy-btn">Copy</button>
+                        </div>
+                    `).join('');
+
+                    showNotification('Titles generated successfully!');
+                } else {
+                    showNotification('No titles generated. Please try again.', true);
+                }
+            } catch (error) {
+                showNotification(`Error: ${error.message}`, true);
+                console.error('Error:', error);
+            } finally {
+                loader.style.display = 'none';
+                generateButton.disabled = false;
+            }
         }
 
-        const apiKey = 'Wm7ktWrM166lZAw2y9IYp2L72wFShWJM7IgGm6jy'; // Your Cohere API key
-        const apiUrl = 'https://api.cohere.ai/v1/generate'; // Cohere's text generation API
-
-        // Show the loader and disable the button
-        loader.style.display = 'inline-block';
-        generateButton.disabled = true;
-
-        try {
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${apiKey}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    model: 'command-xlarge-nightly', // Use a suitable model
-                    prompt: `Generate at least ten engaging blog titles for the topic: "${topic}"`, // Generate at least 10 blog titles based on the topic
-                    max_tokens: 500, // Allow for reasonable content generation
-                    temperature: 0.7 // Adjust for creativity
-                })
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('Title copied to clipboard!');
+            }).catch(err => {
+                showNotification('Failed to copy title.', true);
+                console.error('Error:', err);
             });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-
-            // Display the generated content in the output div
-            if (data.generations && data.generations.length > 0) {
-                const titles = data.generations[0].text.trim().split('\n').filter(title => title); // Split titles by new lines
-                output.innerHTML = `<h2>Generated Titles for "${topic}"</h2>${titles.map(title => `<div>${title.trim()}</div>`).join('')}`; // Display titles on new lines
-            } else {
-                output.innerHTML = 'No titles generated. Try again.';
-            }
-        } catch (error) {
-            output.innerHTML = `Error generating titles. Please try again later. <br>Error: ${error.message}`;
-            console.error('Error:', error);
-        } finally {
-            // Hide the loader and enable the button after the operation
-            loader.style.display = 'none';
-            generateButton.disabled = false;
         }
-    }
-</script>
 
+        function showNotification(message, isError = false) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${isError ? 'error' : ''}`;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+    </script>
 </body>
 </html>
