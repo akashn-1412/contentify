@@ -3,151 +3,399 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generate Personal Blog Post Ideas</title>
+    <title>Blog Post Idea Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary: #6C63FF;
+            --secondary: #4CAF50;
+            --dark: #2C3E50;
+            --light: #ECF0F1;
+            --accent: #FF6B6B;
+            --gradient: linear-gradient(135deg, var(--primary), #8B7FFF);
+            --error: #ff4757;
+            --success: #2ed573;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #f4f4f4;
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            color: var(--light);
+            min-height: 100vh;
         }
+
         .container {
-            max-width: 600px;
+            max-width: 800px;
             margin: 0 auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            transition: transform 0.3s ease;
         }
+
         h1 {
             text-align: center;
+            color: var(--light);
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            position: relative;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
-        input[type="text"] {
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: var(--gradient);
+            border-radius: 2px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--light);
+            font-weight: 500;
+        }
+
+        input[type="text"], select {
             width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 15px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--light);
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
+        select {
+            cursor: pointer;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23ECF0F1%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px top 50%;
+            background-size: 12px auto;
+            padding-right: 40px;
+        }
+
+        select option {
+            background: #1a1a1a;
+            color: var(--light);
+            padding: 15px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
         .button-container {
             display: flex;
-            justify-content: space-between; /* Aligns button and loader */
-            align-items: center; /* Centers items vertically */
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
         }
+
         button {
-            flex: 1; /* Takes full width of the flex container */
-            padding: 10px;
-            background-color: #007BFF;
+            padding: 15px 30px;
+            background: var(--gradient);
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 12px;
             cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
+
+        button.secondary {
+            background: linear-gradient(135deg, var(--secondary), #45a049);
+        }
+
         button:hover {
-            background-color: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 99, 255, 0.4);
         }
-        #output {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            min-height: 100px;
+
+        .idea-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
         }
-        /* Loader styles */
+
+        .idea-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .idea-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .idea-actions button {
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+
         .loader {
-            display: none; /* Initially hidden */
-            border: 4px solid rgba(255, 255, 255, 0.5);
-            border-top: 4px solid #007BFF;
+            display: none;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid var(--primary);
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             animation: spin 1s linear infinite;
-            margin-left: 10px; /* Space between button and loader */
         }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            background: var(--success);
+            color: white;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: var(--error);
+        }
+
+        .favorites-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+
+            button {
+                padding: 12px 24px;
+            }
+        }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h1>
+            <i class="fas fa-lightbulb"></i>
+            Blog Post Idea Generator
+        </h1>
 
-<div class="container">
-    <h1>Catchy Blog Post Idea Generator</h1>
-    <p>Enter a topic to generate unique and catchy blog post ideas for your personal blog:</p>
+        <div class="input-group">
+            <label for="titleInput">Blog Topic</label>
+            <input type="text" id="titleInput" placeholder="Enter your blog topic..." />
+        </div>
 
-    <input type="text" id="titleInput" placeholder="Enter a topic here" />
+        <div class="options-grid">
+            <div class="input-group">
+                <label for="styleSelect">Content Style</label>
+                <select id="styleSelect">
+                    <option value="professional">Professional</option>
+                    <option value="casual">Casual</option>
+                    <option value="tutorial">Tutorial/How-to</option>
+                    <option value="listicle">List Style</option>
+                    <option value="storytelling">Storytelling</option>
+                </select>
+            </div>
 
-    <div class="button-container">
-        <button id="generateButton" onclick="generateIdeas()">
-            Generate Ideas
-        </button>
-        <div class="loader" id="loader"></div> <!-- Loader element -->
+            <div class="input-group">
+                <label for="toneSelect">Content Tone</label>
+                <select id="toneSelect">
+                    <option value="informative">Informative</option>
+                    <option value="conversational">Conversational</option>
+                    <option value="humorous">Humorous</option>
+                    <option value="formal">Formal</option>
+                    <option value="inspirational">Inspirational</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="button-container">
+            <button id="generateButton" onclick="generateIdeas()">
+                <i class="fas fa-magic"></i>
+                Generate Ideas
+                <div class="loader" id="loader"></div>
+            </button>
+            <button class="secondary" onclick="clearAll()">
+                <i class="fas fa-trash"></i>
+                Clear All
+            </button>
+        </div>
+
+        <div id="output"></div>
+
+        <div id="favorites" class="favorites-section">
+            <h2>Saved Ideas</h2>
+            <div id="favoritesList"></div>
+        </div>
     </div>
 
-    <div id="output">
-        Generated blog ideas will appear here...
-    </div>
-</div>
+    <div class="notification" id="notification"></div>
 
-<script>
-    async function generateIdeas() {
-        const topic = document.getElementById('titleInput').value;
-        const output = document.getElementById('output');
-        const loader = document.getElementById('loader');
-        const generateButton = document.getElementById('generateButton');
+    <script>
+        let favoriteIdeas = [];
 
-        if (!topic) {
-            output.innerHTML = 'Please enter a topic!';
-            return;
+        function showNotification(message, isError = false) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${isError ? 'error' : ''}`;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
         }
 
-        const apiKey = 'Wm7ktWrM166lZAw2y9IYp2L72wFShWJM7IgGm6jy'; // Your Cohere API key
-        const apiUrl = 'https://api.cohere.ai/v1/generate'; // Cohere's text generation API
+        function saveToFavorites(idea) {
+            if (!favoriteIdeas.includes(idea)) {
+                favoriteIdeas.push(idea);
+                updateFavoritesList();
+                showNotification('Idea saved successfully!');
+            }
+        }
 
-        // Show the loader and disable the button
-        loader.style.display = 'inline-block';
-        generateButton.disabled = true;
-
-        try {
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${apiKey}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    model: 'command-xlarge-nightly', // Use a suitable model
-                    prompt: `Generate ten catchy and creative blog post ideas for the topic: "${topic}"`, // Prompt for generating creative blog ideas
-                    max_tokens: 500, // Adjust token count for reasonable content
-                    temperature: 0.8 // Increase creativity with higher temperature
-                })
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('Copied to clipboard!');
             });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-
-            // Display the generated content in the output div
-            if (data.generations && data.generations.length > 0) {
-                const ideas = data.generations[0].text.trim().split('\n').filter(idea => idea); // Split ideas by new lines
-                output.innerHTML = `<h2>Catchy Blog Post Ideas for "${topic}"</h2>${ideas.map(idea => `<div>${idea.trim()}</div>`).join('')}`; // Display ideas on new lines
-            } else {
-                output.innerHTML = 'No ideas generated. Try again.';
-            }
-        } catch (error) {
-            output.innerHTML = `Error generating ideas. Please try again later. <br>Error: ${error.message}`;
-            console.error('Error:', error);
-        } finally {
-            // Hide the loader and enable the button after the operation
-            loader.style.display = 'none';
-            generateButton.disabled = false;
         }
-    }
-</script>
 
+        function updateFavoritesList() {
+            const favoritesList = document.getElementById('favoritesList');
+            favoritesList.innerHTML = favoriteIdeas.map((idea, index) => `
+                <div class="idea-card">
+                    ${idea}
+                    <div class="idea-actions">
+                        <button onclick="copyToClipboard('${idea.replace(/'/g, "\\'")}')" style="background: linear-gradient(135deg, #2ed573, #7bed9f)">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                        <button onclick="removeFromFavorites(${index})" style="background: linear-gradient(135deg, #ff4757, #ff6b81)">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function removeFromFavorites(index) {
+            favoriteIdeas.splice(index, 1);
+            updateFavoritesList();
+            showNotification('Idea removed from favorites');
+        }
+
+        function clearAll() {
+            document.getElementById('titleInput').value = '';
+            document.getElementById('output').innerHTML = '';
+            favoriteIdeas = [];
+            updateFavoritesList();
+            showNotification('All content cleared');
+        }
+
+        async function generateIdeas() {
+            const topic = document.getElementById('titleInput').value;
+            const style = document.getElementById('styleSelect').value;
+            const tone = document.getElementById('toneSelect').value;
+            const output = document.getElementById('output');
+            const loader = document.getElementById('loader');
+            const generateButton = document.getElementById('generateButton');
+
+            if (!topic) {
+                showNotification('Please enter a topic!', true);
+                return;
+            }
+
+            loader.style.display = 'inline-block';
+            generateButton.disabled = true;
+
+            try {
+                // Simulated API response for demo
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                const ideas = [
+                    `The Ultimate ${topic} Guide: Everything You Need to Know in 2024`,
+                    `10 Innovative Ways to Master ${topic} Like a Pro`,
+                    `Why ${topic} Matters More Than Ever: A Deep Dive Analysis`,
+                    `The Secret ${topic} Strategies That Nobody Talks About`,
+                    `${topic} 101: A Beginner's Guide to Success`
+                ];
+
+                output.innerHTML = ideas.map(idea => `
+                    <div class="idea-card">
+                        ${idea}
+                        <div class="idea-actions">
+                            <button onclick="saveToFavorites('${idea.replace(/'/g, "\\'")}')" style="background: linear-gradient(135deg, #2ed573, #7bed9f)">
+                                <i class="fas fa-star"></i> Save
+                            </button>
+                            <button onclick="copyToClipboard('${idea.replace(/'/g, "\\'")}')" style="background: linear-gradient(135deg, #6C63FF, #8B7FFF)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+
+                showNotification('Ideas generated successfully!');
+            } catch (error) {
+                showNotification('Error generating ideas. Please try again.', true);
+                console.error('Error:', error);
+            } finally {
+                loader.style.display = 'none';
+                generateButton.disabled = false;
+            }
+        }
+    </script>
 </body>
 </html>
