@@ -3,160 +3,301 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generate Startup Pitches using AI</title>
+    <title>AI Startup Pitch Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #6C63FF;
+            --secondary: #4CAF50;
+            --dark: #2C3E50;
+            --light: #ECF0F1;
+            --accent: #FF6B6B;
+            --gradient: linear-gradient(135deg, var(--primary), #8B7FFF);
+            --error: #ff4757;
+            --success: #2ed573;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #f4f4f4;
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            color: var(--light);
+            min-height: 100vh;
         }
+
         .container {
-            max-width: 600px;
+            max-width: 800px;
             margin: 0 auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            transition: transform 0.3s ease;
         }
+
         h1 {
             text-align: center;
+            color: var(--light);
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            position: relative;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: var(--gradient);
+            border-radius: 2px;
+        }
+
+        p {
+            text-align: center;
+            color: var(--light);
+            margin-bottom: 25px;
+        }
+
+        .tooltip {
+            display: inline-block;
+            position: relative;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-left: 8px;
+        }
+
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            color: #1a1a1a;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            white-space: nowrap;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
         input[type="text"] {
             width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 15px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--light);
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
+        input[type="text"]:focus {
+            outline: none;
+            background: #2d2d2d;
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+
         .button-container {
             display: flex;
-            justify-content: space-between; /* Aligns button and loader */
-            align-items: center; /* Centers items vertically */
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            gap: 15px;
         }
+
         button {
-            flex: 1; /* Takes full width of the flex container */
-            padding: 10px;
-            background-color: #007BFF;
+            padding: 15px 30px;
+            background: var(--gradient);
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 12px;
             cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            min-width: 200px;
         }
+
         button:hover {
-            background-color: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 99, 255, 0.4);
         }
-        #output {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            min-height: 100px;
-            line-height: 1.6; /* Increase line height for better readability */
+
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
         }
-        /* Loader styles */
+
         .loader {
-            display: none; /* Initially hidden */
-            border: 4px solid rgba(255, 255, 255, 0.5);
-            border-top: 4px solid #007BFF;
+            display: none;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid var(--primary);
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             animation: spin 1s linear infinite;
-            margin-left: 10px; /* Space between button and loader */
+            margin-left: 15px;
         }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        #output {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
         .pitch {
-            margin-bottom: 15px; /* Space between each pitch */
-            padding: 10px;
-            background-color: #e9ecef; /* Light gray background for pitches */
-            border-left: 5px solid #007BFF; /* Blue left border for emphasis */
-            border-radius: 4px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid var(--primary);
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .pitch:hover {
+            transform: translateX(5px);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            button {
+                padding: 12px 24px;
+                min-width: 160px;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h1>AI Startup Pitch Generator</h1>
+        <p>
+            Transform your startup idea into compelling pitches
+            <span class="tooltip">?
+                <span class="tooltip-text">Example: "An AI-powered personal fitness coach"</span>
+            </span>
+        </p>
 
-<div class="container">
-    <h1>Startup Pitch Generator</h1>
-    <p>Enter your startup idea below, and generate pitch ideas:</p>
+        <input 
+            type="text" 
+            id="pitchInput" 
+            placeholder="Enter your startup idea here" 
+            aria-label="Startup idea input"
+        />
 
-    <input type="text" id="pitchInput" placeholder="Enter your startup idea here" />
+        <div class="button-container">
+            <button id="generateButton" onclick="generatePitches()">
+                Generate Pitches
+            </button>
+            <div class="loader" id="loader" role="status" aria-label="Loading..."></div>
+        </div>
 
-    <div class="button-container">
-        <button id="generateButton" onclick="generatePitches()">
-            Generate Pitches
-        </button>
-        <div class="loader" id="loader"></div> <!-- Loader element -->
+        <div id="output">
+            <em>Your generated pitches will appear here...</em>
+        </div>
     </div>
 
-    <div id="output">
-        Generated pitches will appear here...
-    </div>
-</div>
+    <script>
+        async function generatePitches() {
+            const idea = document.getElementById('pitchInput').value.trim();
+            const output = document.getElementById('output');
+            const loader = document.getElementById('loader');
+            const generateButton = document.getElementById('generateButton');
 
-<script>
-    async function generatePitches() {
-        const idea = document.getElementById('pitchInput').value;
-        const output = document.getElementById('output');
-        const loader = document.getElementById('loader');
-        const generateButton = document.getElementById('generateButton');
-
-        if (!idea) {
-            output.innerHTML = 'Please enter a startup idea!';
-            return;
-        }
-
-        const apiKey = 'Wm7ktWrM166lZAw2y9IYp2L72wFShWJM7IgGm6jy'; // Replace with your AI API key
-        const apiUrl = 'https://api.cohere.ai/v1/generate'; // Replace with your AI API endpoint
-
-        // Show the loader and disable the button
-        loader.style.display = 'inline-block';
-        generateButton.disabled = true;
-
-        try {
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${apiKey}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    model: 'command-xlarge-nightly', // Use a suitable model
-                    prompt: `Generate at least five engaging pitch ideas for the startup idea: "${idea}"`, // Generate at least 5 pitch ideas based on the startup idea
-                    max_tokens: 500, // Allow for reasonable content generation
-                    temperature: 0.7 // Adjust for creativity
-                })
-            });
-
-            if (!response.ok) {
-                const errorText = await response.text(); // Get the error response
-                throw new Error(`HTTP error! Status: ${response.status} - ${errorText}`);
+            if (!idea) {
+                output.innerHTML = '<em>Please enter a startup idea to generate pitches!</em>';
+                return;
             }
 
-            const data = await response.json();
+            loader.style.display = 'inline-block';
+            generateButton.disabled = true;
+            output.innerHTML = '';
 
-            // Display the generated content in the output div
-            if (data.generations && data.generations.length > 0) {
-                const pitches = data.generations[0].text.trim().split('\n').filter(pitch => pitch); // Split pitches by new lines
-                output.innerHTML = `<h2>Generated Pitches for "${idea}"</h2>${pitches.map(pitch => `<div class="pitch">${pitch.trim()}</div>`).join('')}`; // Display pitches with spacing
-            } else {
-                output.innerHTML = 'No pitches generated. Try again.';
+            try {
+                const response = await fetch('https://api.cohere.ai/v1/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer Wm7ktWrM166lZAw2y9IYp2L72wFShWJM7IgGm6jy',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: 'command-xlarge-nightly',
+                        prompt: `Generate 5 compelling and unique pitch ideas for the following startup concept: "${idea}". Make each pitch concise, engaging, and highlight the unique value proposition.`,
+                        max_tokens: 500,
+                        temperature: 0.7
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                const pitches = data.generations[0].text
+                    .trim()
+                    .split('\n')
+                    .filter(pitch => pitch.trim());
+
+                if (pitches.length) {
+                    output.innerHTML = `
+                        <h2>Pitch Ideas for "${idea}"</h2>
+                        ${pitches.map(pitch => `
+                            <div class="pitch">${pitch.trim()}</div>
+                        `).join('')}
+                    `;
+                } else {
+                    output.innerHTML = '<em>No pitches generated. Please try a different idea.</em>';
+                }
+            } catch (error) {
+                output.innerHTML = `
+                    <em>Error generating pitches: ${error.message}. Please try again later.</em>
+                `;
+            } finally {
+                loader.style.display = 'none';
+                generateButton.disabled = false;
             }
-        } catch (error) {
-            console.error('Fetch error:', error);
-            output.innerHTML = `Error generating pitches. Please try again later.<br>Error: ${error.message}`;
-        } finally {
-            // Hide the loader and enable the button after the operation
-            loader.style.display = 'none';
-            generateButton.disabled = false;
         }
-    }
-</script>
-
+    </script>
 </body>
 </html>
