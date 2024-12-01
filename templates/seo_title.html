@@ -3,82 +3,251 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generate YouTube SEO Titles</title>
+    <title>YouTube SEO Title Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #6C63FF;
+            --secondary: #4CAF50;
+            --dark: #2C3E50;
+            --light: #ECF0F1;
+            --accent: #FF6B6B;
+            --gradient: linear-gradient(135deg, var(--primary), #8B7FFF);
+            --error: #ff4757;
+            --success: #2ed573;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #f4f4f4;
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            color: var(--light);
+            min-height: 100vh;
         }
+
         .container {
-            max-width: 600px;
+            max-width: 800px;
             margin: 0 auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
         }
+
         h1 {
             text-align: center;
+            color: var(--light);
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            position: relative;
         }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: var(--gradient);
+            border-radius: 2px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--light);
+            font-weight: 500;
+        }
+
         input[type="text"] {
             width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--light);
+            font-size: 16px;
+            transition: all 0.3s ease;
         }
+
+        input[type="text"]:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+
         .button-container {
             display: flex;
-            justify-content: space-between; /* Aligns button and loader */
-            align-items: center; /* Centers items vertically */
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
         }
+
         button {
-            flex: 1; /* Takes full width of the flex container */
-            padding: 10px;
-            background-color: #007BFF;
+            padding: 15px 30px;
+            background: var(--gradient);
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 12px;
             cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
+
         button:hover {
-            background-color: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 99, 255, 0.4);
         }
-        #output {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            min-height: 100px;
+
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
         }
-        /* Loader styles */
-        .loader {
-            display: none; /* Initially hidden */
-            border: 4px solid rgba(255, 255, 255, 0.5);
-            border-top: 4px solid #007BFF;
+
+        .output-container {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+        }
+
+        .title-item {
+            padding: 20px;
+            margin: 15px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .title-number {
+            background: var(--primary);
+            color: white;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-            margin-left: 10px; /* Space between button and loader */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
         }
+
+        .title-text {
+            flex-grow: 1;
+            line-height: 1.6;
+        }
+
+        .copy-button {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--light);
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: none;
+            letter-spacing: normal;
+            font-weight: normal;
+        }
+
+        .copy-button:hover {
+            background: var(--primary);
+        }
+
+        .loader {
+            display: none;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            background: var(--success);
+            color: white;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.error {
+            background: var(--error);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+
+            .title-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .copy-button {
+                align-self: flex-end;
+            }
+        }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <div class="content">
+    <div class="container">
         <h1>YouTube SEO Title Generator</h1>
-        <p>Enter a topic to generate SEO-friendly and catchy YouTube titles for your video:</p>
-
-        <input type="text" id="titleInput" placeholder="Enter your video topic here" />
+        
+        <div class="input-group">
+            <label for="titleInput">Enter Your Video Topic</label>
+            <input 
+                type="text" 
+                id="titleInput" 
+                placeholder="e.g., 'How to make sourdough bread'" 
+                autocomplete="off"
+            />
+        </div>
 
         <div class="button-container">
             <button id="generateButton" onclick="generateTitles()">
@@ -87,66 +256,125 @@
             <div class="loader" id="loader"></div>
         </div>
 
-        <div id="output">
-            Generated YouTube SEO titles will appear here...
+        <div class="output-container" id="outputArea">
+            <div id="output">Your generated titles will appear here...</div>
         </div>
     </div>
-</div>
 
-<script>
-    async function generateTitles() {
-        const topic = document.getElementById('titleInput').value;
-        const output = document.getElementById('output');
-        const loader = document.getElementById('loader');
-        const generateButton = document.getElementById('generateButton');
+    <div class="notification" id="notification"></div>
 
-        if (!topic) {
-            output.innerHTML = 'Please enter a topic!';
-            return;
+    <script>
+        // Add event listener for Enter key on input field
+        document.getElementById('titleInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                generateTitles();
+            }
+        });
+
+        async function generateTitles() {
+            const topic = document.getElementById('titleInput').value;
+            const output = document.getElementById('output');
+            const loader = document.getElementById('loader');
+            const generateButton = document.getElementById('generateButton');
+
+            if (!topic) {
+                showNotification('Please enter a topic!', true);
+                return;
+            }
+
+            // Show loader and disable button
+            loader.style.display = 'block';
+            generateButton.disabled = true;
+            output.innerHTML = 'Generating titles...';
+
+            try {
+                const response = await fetch('https://api.cohere.ai/v1/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer Wm7ktWrM166lZAw2y9IYp2L72wFShWJM7IgGm6jy',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: 'command-xlarge-nightly',
+                        prompt: `Generate 10 engaging, SEO-optimized YouTube video titles for the topic: "${topic}". 
+                        Make them catchy and include common SEO patterns like numbers, questions, and emotional triggers where appropriate. 
+                        Each title should be unique and start on a new line.`,
+                        max_tokens: 500,
+                        temperature: 0.8,
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.generations && data.generations.length > 0) {
+                    const titles = data.generations[0].text
+                        .split('\n')
+                        .map(line => line.trim())
+                        .filter(line => line)
+                        .slice(0, 10);
+
+                    // Updated title rendering with data attributes
+                    output.innerHTML = titles
+                        .map((title, index) => `
+                            <div class="title-item">
+                                <div class="title-number">${index + 1}</div>
+                                <div class="title-text">${title}</div>
+                                <button class="copy-button" data-title="${encodeURIComponent(title)}">Copy</button>
+                            </div>
+                        `)
+                        .join('');
+
+                    // Add event listeners to all copy buttons
+                    attachCopyListeners();
+                } else {
+                    output.innerHTML = 'No titles generated. Try again.';
+                }
+            } catch (error) {
+                showNotification('Error generating titles. Try again later.', true);
+                console.error('Error:', error);
+                output.innerHTML = 'Error generating titles. Please try again.';
+            } finally {
+                // Hide loader and enable button
+                loader.style.display = 'none';
+                generateButton.disabled = false;
+            }
         }
 
-        const apiKey = 'Wm7ktWrM166lZAw2y9IYp2L72wFShWJM7IgGm6jy'; // Your Cohere API key
-        const apiUrl = 'https://api.cohere.ai/v1/generate'; // Cohere's text generation API
-
-        loader.style.display = 'inline-block';
-        generateButton.disabled = true;
-
-        try {
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${apiKey}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    model: 'command-xlarge-nightly',
-                    prompt: `Generate ten SEO-friendly and catchy YouTube video titles for the topic: "${topic}"`, 
-                    max_tokens: 500,
-                    temperature: 0.8
-                })
+        function attachCopyListeners() {
+            document.querySelectorAll('.copy-button').forEach(button => {
+                button.addEventListener('click', async function() {
+                    const titleToCopy = decodeURIComponent(this.dataset.title);
+                    try {
+                        await navigator.clipboard.writeText(titleToCopy);
+                        showNotification('Title copied to clipboard!');
+                    } catch (err) {
+                        showNotification('Failed to copy title.', true);
+                        console.error('Copy failed:', err);
+                    }
+                });
             });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-
-            if (data.generations && data.generations.length > 0) {
-                const titles = data.generations[0].text.trim().split('\n').filter(title => title);
-                output.innerHTML = `<h2>SEO-Friendly YouTube Titles for "${topic}"</h2>${titles.map(title => `<div>${title.trim()}</div>`).join('')}`;
-            } else {
-                output.innerHTML = 'No titles generated. Try again.';
-            }
-        } catch (error) {
-            output.innerHTML = `Error generating titles. Please try again later. <br>Error: ${error.message}`;
-            console.error('Error:', error);
-        } finally {
-            loader.style.display = 'none';
-            generateButton.disabled = false;
         }
-    }
-</script>
 
+        function showNotification(message, isError = false) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = 'notification' + (isError ? ' error' : '');
+            
+            // Force a reflow to ensure the transition works
+            notification.offsetHeight;
+            
+            // Add show class to trigger the slide-in
+            notification.classList.add('show');
+
+            // Remove show class after delay to slide out
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+    </script>
 </body>
 </html>
