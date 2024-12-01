@@ -4,178 +4,381 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plagiarism-Free Article Rewriter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --primary: #6C63FF;
+            --secondary: #4CAF50;
+            --dark: #2C3E50;
+            --light: #ECF0F1;
+            --accent: #FF6B6B;
+            --gradient: linear-gradient(135deg, var(--primary), #8B7FFF);
+            --error: #ff4757;
+            --success: #2ed573;
         }
 
-        body, html {
-            height: 100%;
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            color: var(--light);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            background-color: white;
-        }
-
-        .content {
-            max-width: 900px;
             width: 100%;
-            background-color: #fff;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            max-width: 1000px;
+            margin: 20px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            transition: transform 0.3s ease;
         }
 
         h1 {
             text-align: center;
+            color: var(--light);
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            position: relative;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: var(--gradient);
+            border-radius: 2px;
+        }
+
+        .description {
+            text-align: center;
             margin-bottom: 20px;
-            font-size: 2.5rem;
+            color: var(--light);
+            opacity: 0.9;
+        }
+
+        .input-container {
+            margin-bottom: 20px;
+            position: relative;
         }
 
         textarea {
             width: 100%;
             height: 200px;
             padding: 15px;
-            margin: 20px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 1.2rem;
-            resize: none;
+            margin: 8px 0;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--light);
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            resize: vertical;
+        }
+
+        textarea:focus {
+            outline: none;
+            background: #2d2d2d;
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+
+        .character-count {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 0.8em;
+            color: var(--light);
+            opacity: 0.7;
         }
 
         .button-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 20px;
+            margin: 20px 0;
+            gap: 15px;
         }
 
         button {
-            padding: 15px 25px;
-            background-color: #28a745;
+            padding: 15px 30px;
+            background: var(--gradient);
             color: white;
             border: none;
-            border-radius: 5px;
-            font-size: 1.2rem;
+            border-radius: 12px;
             cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         button:hover {
-            background-color: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 99, 255, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .output-container {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .output-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .control-btn {
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 6px;
+            color: var(--light);
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
 
         #output {
-            margin-top: 30px;
-            padding: 25px;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            white-space: pre-wrap;
+            line-height: 1.6;
             min-height: 200px;
-            font-size: 1.1rem;
         }
 
-        /* Loader styles */
         .loader {
             display: none;
-            border: 4px solid rgba(255, 255, 255, 0.5);
-            border-top: 4px solid #28a745;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid var(--primary);
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             animation: spin 1s linear infinite;
-            margin-left: 10px;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
         }
 
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+
+            button {
+                padding: 12px 24px;
+            }
+        }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <div class="content">
+    <div class="container">
         <h1>Plagiarism-Free Article Rewriter</h1>
-        <p>Enter your article or text below to rewrite it in a unique and plagiarism-free way:</p>
+        <p class="description">Transform your content into a unique and original piece while preserving its core message</p>
 
-        <textarea id="articleInput" placeholder="Paste your article or text here..."></textarea>
+        <div class="input-container">
+            <textarea 
+                id="articleInput" 
+                placeholder="Paste your article or text here..."
+                oninput="updateCharacterCount(this)"
+            ></textarea>
+            <div class="character-count">0 / 5000 characters</div>
+        </div>
 
         <div class="button-container">
             <button id="rewriteButton" onclick="rewriteArticle()">
+                <i class="fas fa-magic"></i>
                 Rewrite Article
+                <div class="loader" id="loader"></div>
             </button>
-            <div class="loader" id="loader"></div>
         </div>
 
-        <div id="output">
-            Rewritten article will appear here...
+        <div class="output-container">
+            <div class="output-header">
+                <h3>Rewritten Article</h3>
+                <div class="output-controls">
+                    <button class="control-btn" onclick="copyToClipboard()">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                    <button class="control-btn" onclick="clearContent()">
+                        <i class="fas fa-trash"></i> Clear
+                    </button>
+                </div>
+            </div>
+            <div id="output">Your rewritten article will appear here...</div>
         </div>
     </div>
-</div>
 
-<script>
-    async function rewriteArticle() {
-        const article = document.getElementById('articleInput').value;
-        const output = document.getElementById('output');
-        const loader = document.getElementById('loader');
-        const rewriteButton = document.getElementById('rewriteButton');
+    <div id="notification" class="notification"></div>
 
-        if (!article) {
-            output.innerHTML = 'Please enter an article to rewrite!';
-            return;
+    <script>
+        function updateCharacterCount(textarea) {
+            const count = textarea.value.length;
+            const maxLength = 5000;
+            const counterElement = document.querySelector('.character-count');
+            counterElement.textContent = `${count} / ${maxLength} characters`;
+            
+            if (count > maxLength) {
+                textarea.value = textarea.value.substring(0, maxLength);
+                showNotification('Maximum character limit reached', 'error');
+            }
         }
 
-        const apiKey = 'Wm7ktWrM166lZAw2y9IYp2L72wFShWJM7IgGm6jy'; // Your Cohere API key
-        const apiUrl = 'https://api.cohere.ai/v1/generate'; // Cohere's text generation API
+        async function rewriteArticle() {
+            const article = document.getElementById('articleInput').value;
+            const output = document.getElementById('output');
+            const loader = document.getElementById('loader');
+            const rewriteButton = document.getElementById('rewriteButton');
 
-        loader.style.display = 'inline-block';
-        rewriteButton.disabled = true;
+            if (!article) {
+                showNotification('Please enter an article to rewrite!', 'error');
+                return;
+            }
 
-        try {
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${apiKey}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    model: 'command-xlarge-nightly',
-                    prompt: `Rewrite the following article in a plagiarism-free way while keeping the original meaning intact: "${article}"`,
-                    max_tokens: 500,
-                    temperature: 0.75
-                })
+            const apiKey = 'Wm7ktWrM166lZAw2y9IYp2L72wFShWJM7IgGm6jy';
+            const apiUrl = 'https://api.cohere.ai/v1/generate';
+
+            loader.style.display = 'inline-block';
+            rewriteButton.disabled = true;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: 'command-xlarge-nightly',
+                        prompt: `Rewrite the following article in a unique and plagiarism-free way while maintaining the original meaning and improving the flow: "${article}"`,
+                        max_tokens: 500,
+                        temperature: 0.75
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.generations && data.generations.length > 0) {
+                    const rewrittenArticle = data.generations[0].text.trim();
+                    output.innerHTML = rewrittenArticle.replace(/\n/g, '<br>');
+                    showNotification('Article rewritten successfully!', 'success');
+                } else {
+                    throw new Error('No article generated');
+                }
+            } catch (error) {
+                output.innerHTML = 'Error rewriting article. Please try again later.';
+                showNotification(error.message, 'error');
+                console.error('Error:', error);
+            } finally {
+                loader.style.display = 'none';
+                rewriteButton.disabled = false;
+            }
+        }
+
+        function copyToClipboard() {
+            const output = document.getElementById('output');
+            const text = output.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('Copied to clipboard!', 'success');
+            }).catch(err => {
+                showNotification('Failed to copy text', 'error');
+                console.error('Failed to copy:', err);
             });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-
-            if (data.generations && data.generations.length > 0) {
-                const rewrittenArticle = data.generations[0].text.trim();
-                output.innerHTML = `<h2>Rewritten Article</h2><p>${rewrittenArticle}</p>`;
-            } else {
-                output.innerHTML = 'No article rewritten. Try again.';
-            }
-        } catch (error) {
-            output.innerHTML = `Error rewriting article. Please try again later. <br>Error: ${error.message}`;
-            console.error('Error:', error);
-        } finally {
-            loader.style.display = 'none';
-            rewriteButton.disabled = false;
         }
-    }
-</script>
 
+        function clearContent() {
+            document.getElementById('articleInput').value = '';
+            document.getElementById('output').innerHTML = 'Your rewritten article will appear here...';
+            document.querySelector('.character-count').textContent = '0 / 5000 characters';
+            showNotification('Content cleared', 'success');
+        }
+
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.background = type === 'error' ? 'var(--error)' : 'var(--success)';
+            notification.style.transform = 'translateX(0)';
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(150%)';
+            }, 3000);
+        }
+
+        // Enable Ctrl+Enter to rewrite
+        document.getElementById('articleInput').addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                rewriteArticle();
+            }
+        });
+    </script>
 </body>
 </html>
